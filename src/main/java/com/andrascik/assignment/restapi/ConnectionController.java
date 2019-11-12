@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,8 +18,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/connections")
 public class ConnectionController {
+    private final ConnectionPersistenceService persistenceService;
+
     @Autowired
-    private ConnectionPersistenceService persistenceService;
+    public ConnectionController(ConnectionPersistenceService persistenceService) {
+        this.persistenceService = persistenceService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ConnectionDataDto>> listConnections() {
@@ -35,13 +40,13 @@ public class ConnectionController {
 
     @PutMapping("/{connectionId}")
     public ResponseEntity<ConnectionDataDto> updateConnection(
-            @PathVariable(required = true) long connectionId,
+            @PathVariable long connectionId,
             @RequestBody @NotNull ConnectionDataDto dto) {
-        final Optional<ConnectionData> storedConnection = persistenceService.findConnection(connectionId);
+        final var storedConnection = persistenceService.findConnection(connectionId);
         if (storedConnection.isEmpty()) {
             return ResponseEntity.of(Optional.empty());
         }
-        final ConnectionData toUpdate = storedConnection.get();
+        final var toUpdate = storedConnection.get();
         toUpdate.setName(dto.getName());
         toUpdate.setHostname(dto.getHostname());
         toUpdate.setPort(dto.getPort());
@@ -53,7 +58,8 @@ public class ConnectionController {
     }
 
     @DeleteMapping("/{connectionId}")
-    public ResponseEntity deleteConnection(@PathVariable(required = true) long connectionId) {
+    public ResponseEntity deleteConnection(
+            @PathVariable long connectionId) {
         if (!persistenceService.connectionExists(connectionId)) {
             return ResponseEntity.notFound().build();
         }
@@ -74,7 +80,7 @@ public class ConnectionController {
     }
 
     private ConnectionDataDto translate(ConnectionData connectionData) {
-        final ConnectionDataDto result = new ConnectionDataDto();
+        final var result = new ConnectionDataDto();
         result.setId(connectionData.getId());
         result.setName(connectionData.getName());
         result.setHostname(connectionData.getHostname());
@@ -86,6 +92,8 @@ public class ConnectionController {
     }
 
     private String obfuscatePassword(String password) {
+        //TODO
+        //still not great since it gives away length but not sure what do we want
         return "*".repeat(password.length());
     }
 }

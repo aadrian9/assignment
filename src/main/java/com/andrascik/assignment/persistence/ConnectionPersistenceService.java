@@ -10,8 +10,12 @@ import java.util.stream.StreamSupport;
 
 @Component
 public class ConnectionPersistenceService {
+    private final ConnectionDataRepository repository;
+
     @Autowired
-    private ConnectionDataRepository repository;
+    public ConnectionPersistenceService(ConnectionDataRepository repository) {
+        this.repository = repository;
+    }
 
     public List<ConnectionData> listConnections() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
@@ -19,7 +23,7 @@ public class ConnectionPersistenceService {
     }
 
     public Optional<ConnectionData> saveConnection(ConnectionData connectionData) {
-        final ConnectionData savedConnectionData = repository.save(connectionData);
+        final var savedConnectionData = repository.save(connectionData);
         return savedConnectionData == null ? Optional.empty() : Optional.of(savedConnectionData);
     }
 
