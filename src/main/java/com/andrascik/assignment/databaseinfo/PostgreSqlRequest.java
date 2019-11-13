@@ -77,6 +77,11 @@ public class PostgreSqlRequest {
         }
     }
 
+    public ColumnStatistics getColumnStatistics(String schema, String table, String column) {
+        //TODO query for actual data
+        return new ColumnStatistics(0, 0, 0, 0);
+    }
+
     //==================================================================================================================
 
     private List<ColumnInfo> parseColumns(
@@ -137,7 +142,7 @@ public class PostgreSqlRequest {
 
     private int parseColumnCount(ResultSet columnMetaData) throws SQLException {
         int count = 0;
-        while (columnMetaData.next()){
+        while (columnMetaData.next()) {
             count++;
         }
         return count;

@@ -76,6 +76,23 @@ public class DatabaseInfoController {
         );
     }
 
+    @GetMapping("/{connectionId}/schemas/{schema}/tables/{table}/{column}/statistics")
+    public ResponseEntity<ColumnStatisticsDto> columnStatistics(
+            @PathVariable long connectionId,
+            @PathVariable String schema,
+            @PathVariable String table,
+            @PathVariable String column) {
+        return handleDatabaseAction(
+                connectionId,
+                request -> StatisticsTranslator.translate(
+                        table,
+                        column,
+                        request.getColumnStatistics(schema, table, column)
+                )
+        );
+    }
+
+
     //=================================================================================================================
 
     private <T> ResponseEntity<T> handleDatabaseAction(long connectionId, Function<PostgreSqlRequest, T> action) {
