@@ -1,5 +1,8 @@
 package com.andrascik.assignment.databaseinfo;
 
+/**
+ * Basic information about a database table.
+ */
 public class TableInfo {
     private final String name;
     private final String type;

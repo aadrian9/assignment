@@ -1,5 +1,8 @@
 package com.andrascik.assignment.databaseinfo;
 
+/**
+ * Factory for {@link PostgreSqlConnection}.
+ */
 public interface PostgreSqlConnectionFactory {
 
     /**

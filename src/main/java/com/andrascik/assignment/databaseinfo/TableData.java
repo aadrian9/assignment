@@ -3,11 +3,14 @@ package com.andrascik.assignment.databaseinfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TablePreview {
+/**
+ * Data of a table.
+ */
+public class TableData {
     private final List<String> columnNames;
     private final List<RowData> rows = new ArrayList<>();
 
-    public TablePreview(List<String> columnNames) {
+    public TableData(List<String> columnNames) {
         this.columnNames = columnNames;
     }
 

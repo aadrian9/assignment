@@ -1,5 +1,8 @@
 package com.andrascik.assignment.databaseinfo;
 
+/**
+ * Basic statistics of a table.
+ */
 public class TableStatistics {
     private final int rowCount;
     private final int columnCount;

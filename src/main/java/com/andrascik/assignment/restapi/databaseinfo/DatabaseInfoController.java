@@ -16,6 +16,7 @@ import java.util.function.Function;
 /**
  * Controller querying databases for their contents.
  */
+//TODO swagger
 @RestController
 @RequestMapping("/api/connections")
 public class DatabaseInfoController {

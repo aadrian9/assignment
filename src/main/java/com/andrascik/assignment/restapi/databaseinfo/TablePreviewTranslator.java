@@ -1,19 +1,19 @@
 package com.andrascik.assignment.restapi.databaseinfo;
 
 import com.andrascik.assignment.databaseinfo.RowData;
-import com.andrascik.assignment.databaseinfo.TablePreview;
+import com.andrascik.assignment.databaseinfo.TableData;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class TablePreviewTranslator {
-    static TablePreviewDto translate(TablePreview tablePreview) {
-        final var allRows = tablePreview.getRows()
+    static TablePreviewDto translate(TableData tableData) {
+        final var allRows = tableData.getRows()
                 .stream()
-                .map(row -> translateSingleRow(row, tablePreview.getColumnNames()))
+                .map(row -> translateSingleRow(row, tableData.getColumnNames()))
                 .collect(Collectors.toList());
-        return new TablePreviewDto(tablePreview.getColumnNames(), allRows);
+        return new TablePreviewDto(tableData.getColumnNames(), allRows);
     }
 
     private static RowDataDto translateSingleRow(RowData rowData, List<String> columnNames) {

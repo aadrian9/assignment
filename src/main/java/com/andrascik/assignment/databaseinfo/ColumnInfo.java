@@ -1,5 +1,8 @@
 package com.andrascik.assignment.databaseinfo;
 
+/**
+ * Basic information about a single database column.
+ */
 public class ColumnInfo {
     private final String name;
     private final String dataType;

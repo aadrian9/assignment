@@ -1,5 +1,8 @@
 package com.andrascik.assignment.databaseinfo;
 
+/**
+ * Basic statistics for data in a single database column.
+ */
 public class ColumnStatistics {
     private final long minValue;
     private final long maxValue;

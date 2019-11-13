@@ -1,9 +1,10 @@
 package com.andrascik.assignment.databaseinfo;
 
-import org.springframework.context.annotation.Bean;
-
 import java.sql.*;
 
+/**
+ * Wrapper for {@link Connection} specific to PostgreSQL database.
+ */
 public class PostgreSqlConnection implements AutoCloseable {
     private static final String POSTGRESQL_URL_PREFIX = "jdbc:postgresql://";
 
@@ -13,6 +14,10 @@ public class PostgreSqlConnection implements AutoCloseable {
         this.connection = connection;
     }
 
+    /**
+     * Query for database meta data.
+     * @return
+     */
     public DatabaseMetaData getMetaData() {
         try {
             return connection.getMetaData();
@@ -21,6 +26,11 @@ public class PostgreSqlConnection implements AutoCloseable {
         }
     }
 
+    /**
+     * Prepare a database query.
+     * @param statement
+     * @return
+     */
     public PreparedStatement prepareStatement(String statement) {
         try {
             return connection.prepareStatement(statement);

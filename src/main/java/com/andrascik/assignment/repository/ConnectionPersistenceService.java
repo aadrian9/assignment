@@ -8,6 +8,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Used for storing and retrieving connections from the repository.
+ */
 @Component
 public class ConnectionPersistenceService {
     private final ConnectionDataRepository repository;

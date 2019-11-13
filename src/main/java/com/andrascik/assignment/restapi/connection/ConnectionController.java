@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Controller for persistence of database connection information.
  */
+//TODO swagger
 @RestController
 @RequestMapping("/api/connections")
 public class ConnectionController {

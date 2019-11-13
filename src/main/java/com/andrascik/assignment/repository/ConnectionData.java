@@ -5,9 +5,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Persisted representation of a database connection.
+ */
 @Entity
 public class ConnectionData {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
