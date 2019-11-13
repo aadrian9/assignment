@@ -1,4 +1,4 @@
-package com.andrascik.assignment.restapi;
+package com.andrascik.assignment.restapi.databaseinfo;
 
 import java.util.List;
 

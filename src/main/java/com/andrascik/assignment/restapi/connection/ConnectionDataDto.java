@@ -1,34 +1,21 @@
-package com.andrascik.assignment.persistence;
+package com.andrascik.assignment.restapi.connection;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
-@Entity
-public class ConnectionData {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class ConnectionDataDto {
     private Long id;
+    @NotNull
     private String name;
+    @NotNull
     private String hostname;
+    @NotNull
     private Integer port;
+    @NotNull
     private String databaseName;
+    @NotNull
     private String userName;
+    @NotNull
     private String password;
-
-    protected ConnectionData() {
-    }
-
-    public ConnectionData(String name, String hostname, Integer port, String databaseName, String userName, String password) {
-        this.name = name;
-        this.hostname = hostname;
-        this.port = port;
-        this.databaseName = databaseName;
-        this.userName = userName;
-        this.password = password;
-    }
 
     public Long getId() {
         return id;

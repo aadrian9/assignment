@@ -1,13 +1,12 @@
-package com.andrascik.assignment.restapi;
+package com.andrascik.assignment.restapi.connection;
 
-import com.andrascik.assignment.persistence.ConnectionData;
-import com.andrascik.assignment.persistence.ConnectionPersistenceService;
+import com.andrascik.assignment.repository.ConnectionData;
+import com.andrascik.assignment.repository.ConnectionPersistenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -92,8 +91,6 @@ public class ConnectionController {
     }
 
     private String obfuscatePassword(String password) {
-        //TODO
-        //still not great since it gives away length but not sure what do we want
         return "*".repeat(password.length());
     }
 }

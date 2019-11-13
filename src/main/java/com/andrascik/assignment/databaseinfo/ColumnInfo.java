@@ -1,4 +1,4 @@
-package com.andrascik.assignment.connection;
+package com.andrascik.assignment.databaseinfo;
 
 public class ColumnInfo {
     private final String name;

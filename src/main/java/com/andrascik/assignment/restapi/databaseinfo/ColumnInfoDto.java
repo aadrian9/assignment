@@ -1,4 +1,4 @@
-package com.andrascik.assignment.restapi;
+package com.andrascik.assignment.restapi.databaseinfo;
 
 public class ColumnInfoDto {
     private String columnName;
@@ -11,6 +11,9 @@ public class ColumnInfoDto {
         this.columnDataType = columnDataType;
         this.primaryKey = primaryKey;
         this.foreignKey = foreignKey;
+    }
+
+    public ColumnInfoDto() {
     }
 
     public String getColumnName() {

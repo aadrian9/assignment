@@ -1,4 +1,4 @@
-package com.andrascik.assignment.connection;
+package com.andrascik.assignment.databaseinfo;
 
 import java.util.ArrayList;
 import java.util.List;

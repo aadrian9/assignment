@@ -1,4 +1,4 @@
-package com.andrascik.assignment.persistence;
+package com.andrascik.assignment.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
