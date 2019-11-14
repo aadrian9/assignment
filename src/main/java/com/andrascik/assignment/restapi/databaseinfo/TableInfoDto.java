@@ -1,7 +1,13 @@
 package com.andrascik.assignment.restapi.databaseinfo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Information about database table")
 public class TableInfoDto {
+    @ApiModelProperty(example = "connections")
     private String tableName;
+    @ApiModelProperty(example = "table")
     private String tableType;
 
     public TableInfoDto(String tableName, String tableType) {

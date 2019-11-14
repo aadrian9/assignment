@@ -1,9 +1,15 @@
 package com.andrascik.assignment.restapi.databaseinfo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
+@ApiModel(description = "Data preview for a database table including list of column names")
 public class TablePreviewDto {
+    @ApiModelProperty
     private List<String> columnNames;
+    @ApiModelProperty
     private List<RowDataDto> rows;
 
     public TablePreviewDto(List<String> columnNames, List<RowDataDto> rows) {

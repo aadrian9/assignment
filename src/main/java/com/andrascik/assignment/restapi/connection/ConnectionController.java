@@ -2,10 +2,12 @@ package com.andrascik.assignment.restapi.connection;
 
 import com.andrascik.assignment.repository.ConnectionData;
 import com.andrascik.assignment.repository.ConnectionPersistenceService;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Controller for persistence of database connection information.
  */
-//TODO swagger
+@Api(value = "Connection management")
 @RestController
 @RequestMapping("/api/connections")
 public class ConnectionController {
@@ -25,6 +27,11 @@ public class ConnectionController {
         this.persistenceService = persistenceService;
     }
 
+    @ApiOperation(value = "View a list of stored database connections")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved connections"),
+            @ApiResponse(code = 500, message = "Internal error")
+    })
     @GetMapping
     public ResponseEntity<List<ConnectionDataDto>> listConnections() {
         return ResponseEntity.ok(
@@ -33,15 +40,27 @@ public class ConnectionController {
                         .collect(Collectors.toList()));
     }
 
+    @ApiOperation(value = "Store a new database connection")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Newly stored connection with its assigned ID"),
+            @ApiResponse(code = 500, message = "Internal error")
+    })
     @PostMapping
-    public ResponseEntity<ConnectionDataDto> createConnection(@RequestBody @NotNull ConnectionDataDto dto) {
+    public ResponseEntity<ConnectionDataDto> createConnection(
+            @RequestBody @NotNull @Valid ConnectionDataDto dto) {
         return ResponseEntity.of(persistenceService.saveConnection(translate(dto)).map(this::translate));
     }
 
+    @ApiOperation(value = "Update information about stored connection")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Updated information"),
+            @ApiResponse(code = 404, message = "Connection not found"),
+            @ApiResponse(code = 500, message = "Internal error")
+    })
     @PutMapping("/{connectionId}")
     public ResponseEntity<ConnectionDataDto> updateConnection(
-            @PathVariable long connectionId,
-            @RequestBody @NotNull ConnectionDataDto dto) {
+            @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
+            @RequestBody @NotNull @Valid ConnectionDataDto dto) {
         final var storedConnection = persistenceService.findConnection(connectionId);
         if (storedConnection.isEmpty()) {
             return ResponseEntity.of(Optional.empty());
@@ -57,9 +76,15 @@ public class ConnectionController {
         return ResponseEntity.of(persistenceService.saveConnection(toUpdate).map(this::translate));
     }
 
+    @ApiOperation(value = "Delete stored connection")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 404, message = "Connection not found"),
+            @ApiResponse(code = 500, message = "Internal error")
+    })
     @DeleteMapping("/{connectionId}")
     public ResponseEntity deleteConnection(
-            @PathVariable long connectionId) {
+            @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId) {
         if (!persistenceService.connectionExists(connectionId)) {
             return ResponseEntity.notFound().build();
         }

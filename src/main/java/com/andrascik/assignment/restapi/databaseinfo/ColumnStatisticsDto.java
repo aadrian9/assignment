@@ -1,11 +1,21 @@
 package com.andrascik.assignment.restapi.databaseinfo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Statistics for a database column")
 public class ColumnStatisticsDto {
+    @ApiModelProperty(example = "id")
     private String name;
+    @ApiModelProperty(example = "connections")
     private String table;
+    @ApiModelProperty(example = "1")
     private String minValue;
+    @ApiModelProperty(example = "3")
     private String maxValue;
+    @ApiModelProperty(example = "2")
     private String averageValue;
+    @ApiModelProperty(example = "2")
     private String medianValue;
 
     public ColumnStatisticsDto(

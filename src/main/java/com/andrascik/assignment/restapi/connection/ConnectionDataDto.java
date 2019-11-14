@@ -1,19 +1,30 @@
 package com.andrascik.assignment.restapi.connection;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 
+@ApiModel(description = "All details about the database connection")
 public class ConnectionDataDto {
+    @ApiModelProperty(example = "3")
     private Long id;
+    @ApiModelProperty(example = "connection1")
     @NotNull
     private String name;
+    @ApiModelProperty(example = "localhost")
     @NotNull
     private String hostname;
+    @ApiModelProperty(example = "1234")
     @NotNull
     private Integer port;
+    @ApiModelProperty(example = "mydb")
     @NotNull
     private String databaseName;
+    @ApiModelProperty(example = "user")
     @NotNull
     private String userName;
+    @ApiModelProperty(example = "Password1")
     @NotNull
     private String password;
 

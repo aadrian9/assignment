@@ -1,9 +1,17 @@
 package com.andrascik.assignment.restapi.databaseinfo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Information about database column")
 public class ColumnInfoDto {
+    @ApiModelProperty(example = "id")
     private String columnName;
+    @ApiModelProperty(example = "integer")
     private String columnDataType;
+    @ApiModelProperty(example = "true")
     private boolean primaryKey;
+    @ApiModelProperty(example = "false")
     private boolean foreignKey;
 
     public ColumnInfoDto(String columnName, String columnDataType, boolean primaryKey, boolean foreignKey) {
