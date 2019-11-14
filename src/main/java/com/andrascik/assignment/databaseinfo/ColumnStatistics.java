@@ -4,31 +4,31 @@ package com.andrascik.assignment.databaseinfo;
  * Basic statistics for data in a single database column.
  */
 public class ColumnStatistics {
-    private final long minValue;
-    private final long maxValue;
-    private final double averageValue;
-    private final long medianValue;
+    private final String minValue;
+    private final String maxValue;
+    private final String averageValue;
+    private final String medianValue;
 
-    public ColumnStatistics(long minValue, long maxValue, double averageValue, long medianValue) {
+    public ColumnStatistics(String minValue, String maxValue, String averageValue, String medianValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.averageValue = averageValue;
         this.medianValue = medianValue;
     }
 
-    public long getMinValue() {
+    public String getMinValue() {
         return minValue;
     }
 
-    public long getMaxValue() {
+    public String getMaxValue() {
         return maxValue;
     }
 
-    public double getAverageValue() {
+    public String getAverageValue() {
         return averageValue;
     }
 
-    public long getMedianValue() {
+    public String getMedianValue() {
         return medianValue;
     }
 }

@@ -3,12 +3,13 @@ package com.andrascik.assignment.restapi.databaseinfo;
 public class ColumnStatisticsDto {
     private String name;
     private String table;
-    private long minValue;
-    private long maxValue;
-    private double averageValue;
-    private long medianValue;
+    private String minValue;
+    private String maxValue;
+    private String averageValue;
+    private String medianValue;
 
-    public ColumnStatisticsDto(String name, String table, long minValue, long maxValue, double averageValue, long medianValue) {
+    public ColumnStatisticsDto(
+            String name, String table, String minValue, String maxValue, String averageValue, String medianValue) {
         this.name = name;
         this.table = table;
         this.minValue = minValue;
@@ -36,35 +37,35 @@ public class ColumnStatisticsDto {
         this.table = table;
     }
 
-    public long getMinValue() {
+    public String getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(long minValue) {
+    public void setMinValue(String minValue) {
         this.minValue = minValue;
     }
 
-    public long getMaxValue() {
+    public String getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(long maxValue) {
+    public void setMaxValue(String maxValue) {
         this.maxValue = maxValue;
     }
 
-    public double getAverageValue() {
+    public String getAverageValue() {
         return averageValue;
     }
 
-    public void setAverageValue(double averageValue) {
+    public void setAverageValue(String averageValue) {
         this.averageValue = averageValue;
     }
 
-    public long getMedianValue() {
+    public String getMedianValue() {
         return medianValue;
     }
 
-    public void setMedianValue(long medianValue) {
+    public void setMedianValue(String medianValue) {
         this.medianValue = medianValue;
     }
 }

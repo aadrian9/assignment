@@ -10,8 +10,18 @@ import java.util.List;
  * Sends requests to a PostgreSQL database.
  */
 public class PostgreSqlRequest {
+    private static final String ROW_COUNT_LABEL = "ROW_COUNT";
+    private static final String MIN_VALUE_LABEL = "MIN_VALUE";
+    private static final String MAX_VALUE_LABEL = "MAX_VALUE";
+    private static final String AVG_VALUE_LABEL = "AVG_VALUE";
+    private static final String MEDIAN_VALUE_LABEL = "MEDIAN_VALUE";
     private static final String GET_TABLE_DATA_QUERY = "SELECT * FROM '?'.'?' LIMIT 10";
-    private static final String GET_ROW_COUNT_QUERY = "SELECT COUNT(*) FROM '?'.'?'";
+    private static final String GET_ROW_COUNT_QUERY = "SELECT count(*) AS " + ROW_COUNT_LABEL + " FROM '?'.'?'";
+    private static final String GET_COLUMN_MIN_VALUE_QUERY = "SELECT min(?) AS " + MIN_VALUE_LABEL + " FROM '?'.'?'";
+    private static final String GET_COLUMN_MAX_VALUE_QUERY = "SELECT max(?) AS " + MAX_VALUE_LABEL + " FROM '?'.'?'";
+    private static final String GET_COLUMN_AVG_VALUE_QUERY = "SELECT avg(?) AS " + AVG_VALUE_LABEL + " FROM '?'.'?'";
+    private static final String GET_COLUMN_MEDIAN_VALUE_QUERY =
+            "SELECT percentile_disc(0.5) WITHIN GROUP (ORDER BY '?'.'?') AS " + MEDIAN_VALUE_LABEL + " FROM '?'.'?'";
 
     private final PostgreSqlConnection connection;
 
@@ -115,8 +125,12 @@ public class PostgreSqlRequest {
      * @return
      */
     public ColumnStatistics getColumnStatistics(String schema, String table, String column) {
-        //TODO query for actual data
-        return new ColumnStatistics(0, 0, 0, 0);
+        return new ColumnStatistics(
+                getColumnMinValue(schema, table, column),
+                getColumnMaxValue(schema, table, column),
+                getColumnAverageValue(schema, table, column),
+                getColumnMedianValue(schema, table, column)
+        );
     }
 
     //==================================================================================================================
@@ -189,6 +203,50 @@ public class PostgreSqlRequest {
         if (!queryResult.next()) {
             throw new PostgreSqlConnectionException("No result found for row count query.");
         }
-        return queryResult.getInt(1);
+        return queryResult.getInt(ROW_COUNT_LABEL);
+    }
+
+    private String getColumnMinValue(String schema, String table, String column) {
+        return processSimpleStatisticsQuery(schema, table, column, GET_COLUMN_MIN_VALUE_QUERY, MIN_VALUE_LABEL);
+    }
+
+    private String getColumnMaxValue(String schema, String table, String column) {
+        return processSimpleStatisticsQuery(schema, table, column, GET_COLUMN_MAX_VALUE_QUERY, MAX_VALUE_LABEL);
+    }
+
+    private String getColumnAverageValue(String schema, String table, String column) {
+        return processSimpleStatisticsQuery(schema, table, column, GET_COLUMN_AVG_VALUE_QUERY, AVG_VALUE_LABEL);
+    }
+
+    private String processSimpleStatisticsQuery(
+            String schema, String table, String column, String getColumnMinValueQuery, String minValueLabel) {
+        try (final var statement = connection.prepareStatement(getColumnMinValueQuery)) {
+            statement.setString(1, column);
+            statement.setString(2, schema);
+            statement.setString(3, table);
+            final var queryResult = statement.executeQuery();
+            if (!queryResult.next()) {
+                throw new PostgreSqlConnectionException("No result found for " + minValueLabel + " value query.");
+            }
+            return queryResult.getString(minValueLabel);
+        } catch (SQLException e) {
+            throw new PostgreSqlConnectionException(e);
+        }
+    }
+
+    private String getColumnMedianValue(String schema, String table, String column) {
+        try (final var statement = connection.prepareStatement(GET_COLUMN_MEDIAN_VALUE_QUERY)) {
+            statement.setString(1, table);
+            statement.setString(2, column);
+            statement.setString(3, schema);
+            statement.setString(4, table);
+            final var queryResult = statement.executeQuery();
+            if (!queryResult.next()) {
+                throw new PostgreSqlConnectionException("No result found for " + MEDIAN_VALUE_LABEL + " value query.");
+            }
+            return queryResult.getString(MEDIAN_VALUE_LABEL);
+        } catch (SQLException e) {
+            throw new PostgreSqlConnectionException(e);
+        }
     }
 }
