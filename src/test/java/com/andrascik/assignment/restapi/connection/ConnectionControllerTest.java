@@ -116,9 +116,7 @@ class ConnectionControllerTest {
     }
 
     private ConnectionData mockConnection(long id) {
-        final var result = new ConnectionData(CONNECTION_NAME, HOSTNAME, PORT, DATABASE_NAME, USER_NAME, USER_PASSWORD);
-        result.setId(id);
-        return result;
+        return new ConnectionData(id, CONNECTION_NAME, HOSTNAME, PORT, DATABASE_NAME, USER_NAME, USER_PASSWORD);
     }
 
 }

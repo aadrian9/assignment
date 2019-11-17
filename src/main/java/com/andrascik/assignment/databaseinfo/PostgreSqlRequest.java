@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Sends requests to a PostgreSQL database.
  */
-public class PostgreSqlRequest {
+class PostgreSqlRequest {
     private static final String ROW_COUNT_LABEL = "ROW_COUNT";
     private static final String MIN_VALUE_LABEL = "MIN_VALUE";
     private static final String MAX_VALUE_LABEL = "MAX_VALUE";
@@ -25,15 +25,11 @@ public class PostgreSqlRequest {
 
     private final PostgreSqlConnection connection;
 
-    public PostgreSqlRequest(PostgreSqlConnection connection) {
+    PostgreSqlRequest(PostgreSqlConnection connection) {
         this.connection = connection;
     }
 
-    /**
-     * Lists names of all database schemas.
-     * @return
-     */
-    public List<String> listSchemas() {
+    List<String> listSchemas() {
         final List<String> schemas = new ArrayList<>();
         try (final var resultSet = connection.getMetaData().getSchemas()) {
             while (resultSet.next()) {
@@ -45,12 +41,7 @@ public class PostgreSqlRequest {
         return schemas;
     }
 
-    /**
-     * Lists information about all tables within a schema.
-     * @param schema
-     * @return
-     */
-    public List<TableInfo> listTables(String schema) {
+    List<TableInfo> listTables(String schema) {
         final var tables = new ArrayList<TableInfo>();
         try (final var resultSet = connection.getMetaData().getTables(null, schema, "%", null)) {
             while (resultSet.next()) {
@@ -65,13 +56,7 @@ public class PostgreSqlRequest {
         return tables;
     }
 
-    /**
-     * Lists information about all columns within a table.
-     * @param schema
-     * @param table
-     * @return
-     */
-    public List<ColumnInfo> listColumns(String schema, String table) {
+    List<ColumnInfo> listColumns(String schema, String table) {
         final var metaData = connection.getMetaData();
         try (final var columnMetaData = metaData.getColumns(null, schema, table, "%");
              final var primaryKeyMetaData = metaData.getPrimaryKeys(null, schema, table);
@@ -84,13 +69,7 @@ public class PostgreSqlRequest {
         }
     }
 
-    /**
-     * Returns a preview of data for a table with sample rows containing all columns.
-     * @param schema
-     * @param table
-     * @return
-     */
-    public TableData previewData(String schema, String table) {
+    TableData previewData(String schema, String table) {
         try (final var statement = connection.prepareStatement(GET_TABLE_DATA_QUERY)) {
             statement.setString(1, schema);
             statement.setString(2, table);
@@ -100,13 +79,7 @@ public class PostgreSqlRequest {
         }
     }
 
-    /**
-     * Determine number of rows and columns in a table.
-     * @param schema
-     * @param table
-     * @return
-     */
-    public TableStatistics getTableStatistics(String schema, String table) {
+    TableStatistics getTableStatistics(String schema, String table) {
         try (final var statement = connection.prepareStatement(GET_ROW_COUNT_QUERY);
              final var columnMetaData = connection.getMetaData().getColumns(null, schema, table, "%")) {
             statement.setString(1, schema);
@@ -117,14 +90,7 @@ public class PostgreSqlRequest {
         }
     }
 
-    /**
-     * Determine basic statistics for a single column in a table.
-     * @param schema
-     * @param table
-     * @param column
-     * @return
-     */
-    public ColumnStatistics getColumnStatistics(String schema, String table, String column) {
+    ColumnStatistics getColumnStatistics(String schema, String table, String column) {
         return new ColumnStatistics(
                 getColumnMinValue(schema, table, column),
                 getColumnMaxValue(schema, table, column),

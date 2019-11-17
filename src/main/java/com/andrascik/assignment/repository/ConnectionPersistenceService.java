@@ -22,12 +22,14 @@ public class ConnectionPersistenceService {
 
     public List<ConnectionData> listConnections() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
+                .map(ConnectionData::new)
                 .collect(Collectors.toList());
     }
 
     public Optional<ConnectionData> saveConnection(ConnectionData connectionData) {
-        final var savedConnectionData = repository.save(connectionData);
-        return savedConnectionData == null ? Optional.empty() : Optional.of(savedConnectionData);
+        final var savedConnectionData = repository.save(connectionData.toDao());
+        return Optional.ofNullable(savedConnectionData)
+                .map(ConnectionData::new);
     }
 
     public boolean connectionExists(long id) {
@@ -35,7 +37,8 @@ public class ConnectionPersistenceService {
     }
 
     public Optional<ConnectionData> findConnection(long id) {
-        return repository.findById(id);
+        return repository.findById(id)
+                .map(ConnectionData::new);
     }
 
 

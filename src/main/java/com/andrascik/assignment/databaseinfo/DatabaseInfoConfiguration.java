@@ -1,12 +1,10 @@
-package com.andrascik.assignment;
+package com.andrascik.assignment.databaseinfo;
 
-import com.andrascik.assignment.databaseinfo.PostgreSqlConnection;
-import com.andrascik.assignment.databaseinfo.PostgreSqlConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AssignmentConfiguration {
+public class DatabaseInfoConfiguration {
     @Bean
     public PostgreSqlConnectionFactory postgreSqlConnectionFactory() {
         return new PostgreSqlConnection.Factory();

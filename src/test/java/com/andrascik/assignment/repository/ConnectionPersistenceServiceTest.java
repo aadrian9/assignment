@@ -24,7 +24,7 @@ class ConnectionPersistenceServiceTest {
 
     @Test
     void findConnection_exists_correctlyReturned() {
-        doAnswer(i -> Optional.of(mockConnection(i.getArgument(0))))
+        doAnswer(i -> Optional.of(mockConnectionDao(i.getArgument(0))))
                 .when(repository)
                 .findById(anyLong());
 
@@ -80,11 +80,12 @@ class ConnectionPersistenceServiceTest {
 
     @Test
     void createConnection_created_correctlyReturned() {
-        doAnswer(i -> mockConnection(CONNECTION_A_ID))
+        doAnswer(i -> mockConnectionDao(CONNECTION_A_ID))
                 .when(repository)
-                .save(any(ConnectionData.class));
+                .save(any(ConnectionDataDao.class));
 
-        final var actual = persistenceService.saveConnection(new ConnectionData());
+        final var actual = persistenceService
+                .saveConnection(new ConnectionData(new ConnectionDataDao()));
 
         assertThat(actual.get())
                 .extracting(ConnectionData::getId)
@@ -105,7 +106,7 @@ class ConnectionPersistenceServiceTest {
 
     @Test
     void listConnections_allConnectionsReturned() {
-        doAnswer(i -> mockTwoConnections()).when(repository).findAll();
+        doAnswer(i -> mockTwoConnectionsDao()).when(repository).findAll();
 
         final var actual = persistenceService.listConnections();
 
@@ -115,7 +116,7 @@ class ConnectionPersistenceServiceTest {
 
     @Test
     void listConnections_noConnections_emptyList() {
-        doReturn(new ArrayList<ConnectionData>()).when(repository).findAll();
+        doReturn(new ArrayList<ConnectionDataDao>()).when(repository).findAll();
 
         final var actual = persistenceService.listConnections();
 
@@ -126,15 +127,19 @@ class ConnectionPersistenceServiceTest {
 
     //=================================================================================================================
 
-    private Iterable<ConnectionData> mockTwoConnections() {
-        final var result = new ArrayList<ConnectionData>();
-        result.add(mockConnection(CONNECTION_A_ID));
-        result.add(mockConnection(CONNECTION_B_ID));
+    private ConnectionData mockConnection(long id) {
+        return new ConnectionData(mockConnectionDao(id));
+    }
+
+    private Iterable<ConnectionDataDao> mockTwoConnectionsDao() {
+        final var result = new ArrayList<ConnectionDataDao>();
+        result.add(mockConnectionDao(CONNECTION_A_ID));
+        result.add(mockConnectionDao(CONNECTION_B_ID));
         return result;
     }
 
-    private ConnectionData mockConnection(long id) {
-        final var result = new ConnectionData();
+    private ConnectionDataDao mockConnectionDao(long id) {
+        final var result = new ConnectionDataDao();
         result.setId(id);
         return result;
     }

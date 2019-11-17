@@ -1,8 +1,6 @@
 package com.andrascik.assignment.restapi.databaseinfo;
 
-import com.andrascik.assignment.databaseinfo.*;
-import com.andrascik.assignment.repository.ConnectionData;
-import com.andrascik.assignment.repository.ConnectionPersistenceService;
+import com.andrascik.assignment.databaseinfo.DatabaseInfoService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Controller querying databases for their contents.
@@ -21,15 +19,11 @@ import java.util.function.Function;
 @RestController
 @RequestMapping("/api/connections")
 public class DatabaseInfoController {
-    private final ConnectionPersistenceService persistenceService;
-    private final PostgreSqlConnectionFactory factory;
+    private final DatabaseInfoService infoService;
 
     @Autowired
-    public DatabaseInfoController(
-            ConnectionPersistenceService persistenceService,
-            PostgreSqlConnectionFactory factory) {
-        this.persistenceService = persistenceService;
-        this.factory = factory;
+    public DatabaseInfoController(DatabaseInfoService infoService) {
+        this.infoService = infoService;
     }
 
     @ApiOperation(value = "List schemas for a database")
@@ -41,7 +35,9 @@ public class DatabaseInfoController {
     @GetMapping("/{connectionId}/schemas")
     public ResponseEntity<List<String>> listSchemas(
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId) {
-        return handleDatabaseAction(connectionId, PostgreSqlRequest::listSchemas);
+        return ResponseEntity.ok(
+                infoService.listSchemas(connectionId)
+        );
     }
 
     @ApiOperation(value = "List tables in a database schema")
@@ -54,7 +50,12 @@ public class DatabaseInfoController {
     public ResponseEntity<List<TableInfoDto>> listTables(
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema) {
-        return handleDatabaseAction(connectionId, request -> TableInfoTranslator.translate(request.listTables(schema)));
+        return ResponseEntity.ok(
+                infoService.listTables(connectionId, schema)
+                        .stream()
+                        .map(DatabaseInfoTranslator::translate)
+                        .collect(Collectors.toList())
+        );
     }
 
     @ApiOperation(value = "List columns in a database table")
@@ -68,9 +69,11 @@ public class DatabaseInfoController {
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table) {
-        return handleDatabaseAction(
-                connectionId,
-                request -> ColumnInfoTranslator.translate(request.listColumns(schema, table))
+        return ResponseEntity.ok(
+                infoService.listColumns(connectionId, schema, table)
+                        .stream()
+                        .map(DatabaseInfoTranslator::translate)
+                        .collect(Collectors.toList())
         );
     }
 
@@ -85,9 +88,8 @@ public class DatabaseInfoController {
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table) {
-        return handleDatabaseAction(
-                connectionId,
-                request -> TablePreviewTranslator.translate(request.previewData(schema, table))
+        return ResponseEntity.ok(
+                DatabaseInfoTranslator.translate(infoService.previewData(connectionId, schema, table))
         );
     }
 
@@ -102,9 +104,8 @@ public class DatabaseInfoController {
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table) {
-        return handleDatabaseAction(
-                connectionId,
-                request -> StatisticsTranslator.translate(table, request.getTableStatistics(schema, table))
+        return ResponseEntity.ok(
+                DatabaseInfoTranslator.translate(table, infoService.getTableStatistics(connectionId, schema, table))
         );
     }
 
@@ -120,37 +121,12 @@ public class DatabaseInfoController {
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table,
             @ApiParam(value = "Name of the table column", required = true) @PathVariable String column) {
-        return handleDatabaseAction(
-                connectionId,
-                request -> StatisticsTranslator.translate(
+        return ResponseEntity.ok(
+                DatabaseInfoTranslator.translate(
                         table,
                         column,
-                        request.getColumnStatistics(schema, table, column)
+                        infoService.getColumnStatistics(connectionId, schema, table, column)
                 )
-        );
-    }
-
-
-    //=================================================================================================================
-
-    private <T> ResponseEntity<T> handleDatabaseAction(long connectionId, Function<PostgreSqlRequest, T> action) {
-        final var connectionInfo = persistenceService.findConnection(connectionId);
-        if (connectionInfo.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        try (final var connection = createConnection(connectionInfo.get())) {
-            final var request = new PostgreSqlRequest(connection);
-            return ResponseEntity.ok(action.apply(request));
-        }
-    }
-
-    private PostgreSqlConnection createConnection(ConnectionData connectionInfo) {
-        return factory.create(
-                connectionInfo.getHostname(),
-                connectionInfo.getPort(),
-                connectionInfo.getDatabaseName(),
-                connectionInfo.getUserName(),
-                connectionInfo.getPassword()
         );
     }
 }

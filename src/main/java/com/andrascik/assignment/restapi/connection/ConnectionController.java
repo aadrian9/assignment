@@ -1,6 +1,7 @@
 package com.andrascik.assignment.restapi.connection;
 
 import com.andrascik.assignment.repository.ConnectionData;
+import com.andrascik.assignment.repository.ConnectionDataDao;
 import com.andrascik.assignment.repository.ConnectionPersistenceService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,15 @@ public class ConnectionController {
     @ApiOperation(value = "Store a new database connection")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Newly stored connection with its assigned ID"),
+            @ApiResponse(code = 400, message = "Can't create connection with assigned id"),
             @ApiResponse(code = 500, message = "Internal error")
     })
     @PostMapping
     public ResponseEntity<ConnectionDataDto> createConnection(
             @RequestBody @NotNull @Valid ConnectionDataDto dto) {
+        if (dto.getId() != null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.of(
                 persistenceService
                         .saveConnection(translate(dto))
@@ -71,16 +76,10 @@ public class ConnectionController {
         if (storedConnection.isEmpty()) {
             return ResponseEntity.of(Optional.empty());
         }
-        final var toUpdate = storedConnection.get();
-        toUpdate.setName(dto.getName());
-        toUpdate.setHostname(dto.getHostname());
-        toUpdate.setPort(dto.getPort());
-        toUpdate.setDatabaseName(dto.getDatabaseName());
-        toUpdate.setUserName(dto.getUserName());
-        toUpdate.setPassword(dto.getPassword());
+        dto.setId(storedConnection.get().getId());
 
         return ResponseEntity.of(
-                persistenceService.saveConnection(toUpdate)
+                persistenceService.saveConnection(translate(dto))
                         .map(this::translate)
         );
     }
@@ -105,6 +104,7 @@ public class ConnectionController {
 
     private ConnectionData translate(ConnectionDataDto dto) {
         return new ConnectionData(
+                dto.getId(),
                 dto.getName(),
                 dto.getHostname(),
                 dto.getPort(),
