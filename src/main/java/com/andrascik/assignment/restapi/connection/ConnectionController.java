@@ -35,9 +35,11 @@ public class ConnectionController {
     @GetMapping
     public ResponseEntity<List<ConnectionDataDto>> listConnections() {
         return ResponseEntity.ok(
-                persistenceService.listConnections().stream()
+                persistenceService.listConnections()
+                        .stream()
                         .map(this::translate)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList())
+        );
     }
 
     @ApiOperation(value = "Store a new database connection")
@@ -48,7 +50,11 @@ public class ConnectionController {
     @PostMapping
     public ResponseEntity<ConnectionDataDto> createConnection(
             @RequestBody @NotNull @Valid ConnectionDataDto dto) {
-        return ResponseEntity.of(persistenceService.saveConnection(translate(dto)).map(this::translate));
+        return ResponseEntity.of(
+                persistenceService
+                        .saveConnection(translate(dto))
+                        .map(this::translate)
+        );
     }
 
     @ApiOperation(value = "Update information about stored connection")
@@ -73,7 +79,10 @@ public class ConnectionController {
         toUpdate.setUserName(dto.getUserName());
         toUpdate.setPassword(dto.getPassword());
 
-        return ResponseEntity.of(persistenceService.saveConnection(toUpdate).map(this::translate));
+        return ResponseEntity.of(
+                persistenceService.saveConnection(toUpdate)
+                        .map(this::translate)
+        );
     }
 
     @ApiOperation(value = "Delete stored connection")
@@ -117,6 +126,9 @@ public class ConnectionController {
     }
 
     private String obfuscatePassword(String password) {
-        return "*".repeat(password.length());
+        if (password == null) {
+            return null;
+        }
+        return "****";
     }
 }
