@@ -1,7 +1,6 @@
 package com.andrascik.assignment.restapi.connection;
 
 import com.andrascik.assignment.repository.ConnectionData;
-import com.andrascik.assignment.repository.ConnectionDataDao;
 import com.andrascik.assignment.repository.ConnectionPersistenceService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
