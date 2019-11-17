@@ -35,7 +35,7 @@ public class DatabaseInfoController {
     @GetMapping("/{connectionId}/schemas")
     public ResponseEntity<List<String>> listSchemas(
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId) {
-        return ResponseEntity.ok(
+        return ResponseEntity.of(
                 infoService.listSchemas(connectionId)
         );
     }
@@ -50,8 +50,12 @@ public class DatabaseInfoController {
     public ResponseEntity<List<TableInfoDto>> listTables(
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema) {
+        final var tables = infoService.listTables(connectionId, schema);
+        if (tables.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(
-                infoService.listTables(connectionId, schema)
+                tables.get()
                         .stream()
                         .map(DatabaseInfoTranslator::translate)
                         .collect(Collectors.toList())
@@ -69,8 +73,12 @@ public class DatabaseInfoController {
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table) {
+        final var columns = infoService.listColumns(connectionId, schema, table);
+        if (columns.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(
-                infoService.listColumns(connectionId, schema, table)
+                columns.get()
                         .stream()
                         .map(DatabaseInfoTranslator::translate)
                         .collect(Collectors.toList())
@@ -88,8 +96,12 @@ public class DatabaseInfoController {
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table) {
+        final var tablePreview = infoService.previewData(connectionId, schema, table);
+        if (tablePreview.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(
-                DatabaseInfoTranslator.translate(infoService.previewData(connectionId, schema, table))
+                DatabaseInfoTranslator.translate(tablePreview.get())
         );
     }
 
@@ -104,8 +116,12 @@ public class DatabaseInfoController {
             @ApiParam(value = "Id assigned to the database connection", required = true) @PathVariable long connectionId,
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table) {
+        final var tableStatistics = infoService.getTableStatistics(connectionId, schema, table);
+        if (tableStatistics.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(
-                DatabaseInfoTranslator.translate(table, infoService.getTableStatistics(connectionId, schema, table))
+                DatabaseInfoTranslator.translate(table, tableStatistics.get())
         );
     }
 
@@ -121,11 +137,15 @@ public class DatabaseInfoController {
             @ApiParam(value = "Name of the database schema", required = true) @PathVariable String schema,
             @ApiParam(value = "Name of the database table", required = true) @PathVariable String table,
             @ApiParam(value = "Name of the table column", required = true) @PathVariable String column) {
+        final var columnStatistics = infoService.getColumnStatistics(connectionId, schema, table, column);
+        if (columnStatistics.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(
                 DatabaseInfoTranslator.translate(
                         table,
                         column,
-                        infoService.getColumnStatistics(connectionId, schema, table, column)
+                        columnStatistics.get()
                 )
         );
     }
